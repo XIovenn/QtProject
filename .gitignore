@@ -1,0 +1,30 @@
+# === Qt 编译产物（通用规则，作用于所有子项目）===
+build-*/
+debug/
+release/
+*.user
+*.user.*
+Makefile
+Makefile.*
+*.pro.user*
+.qmake.stash
+ui_*.h
+moc_*.cpp
+qrc_*.cpp
+
+# === C++ 编译产物 ===
+*.obj
+*.o
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+*.pdb
+
+# === 系统/编辑器垃圾 ===
+.DS_Store
+Thumbs.db
+*.swp
+*~
