@@ -30,6 +30,8 @@ private slots:
 
     void btnBinaryOperatorClicked();
 
+    void btnUnaryOperatorClicked();
+
     void on_btnPeriod_clicked();
 
     void on_btnDel_clicked();
