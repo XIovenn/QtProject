@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/bold.png</file>
+        <file>img/content_cut.png</file>
+        <file>img/copy.png</file>
+        <file>img/folder_open.png</file>
+        <file>img/format_italic.png</file>
+        <file>img/format_underlined.png</file>
+        <file>img/glyphs.png</file>
+        <file>img/info.png</file>
+        <file>img/move_item.png</file>
+        <file>img/new.png</file>
+        <file>img/print.png</file>
+        <file>img/reply.png</file>
+        <file>img/save.png</file>
+        <file>img/save_as.png</file>
+        <file>img/undo.png</file>
+        <file>img/open_in_new.png</file>
+        <file>img/content_paste.png</file>
+        <file>img/find_in_page.png</file>
+        <file>img/menu.png</file>
+        <file>img/redo.png</file>
+        <file>img/replace.png</file>
+        <file>img/select_all.png</file>
+        <file>img/toolbar.png</file>
+        <file>img/wrap_text.png</file>
+    </qresource>
+</RCC>
