@@ -24,5 +24,6 @@
         <file>img/select_all.png</file>
         <file>img/toolbar.png</file>
         <file>img/wrap_text.png</file>
+        <file>img/textedit.png</file>
     </qresource>
 </RCC>
