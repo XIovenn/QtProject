@@ -491,6 +491,9 @@
    </property>
   </action>
   <action name="actionShowLineNumbers">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>显示行号(&amp;L)</string>
    </property>

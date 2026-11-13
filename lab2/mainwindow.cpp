@@ -49,6 +49,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->actionToolbar->setChecked(true);
     ui->actionStatusbar->setChecked(true);
+    ui->actionShowLineNumbers->setChecked(false);
+    // on_actionShowLineNumbers_triggered(false);
+
+    connect(ui->actionShowLineNumbers,SIGNAL(triggered(bool)),ui->textEdit,SLOT(hideLineNumberArea(bool)));
 
 }
 
@@ -99,23 +103,25 @@ void MainWindow::on_actionOpen_triggered()
         return;
     }
 
-    QString filename=QFileDialog::getOpenFileName(this,"打开文件",".",tr("Text file (*.txt) ;; All(*.*)"));  //过滤器
-    QFile file(filename);
+    QString filename = QFileDialog::getOpenFileName(this,"打开文件",".",tr("Text file (*.txt) ;; All(*.*)"));
+    if(filename.isEmpty()){              // 用户取消
+        return;
+    }
 
+    QFile file(filename);
     if(!file.open(QFile::ReadOnly | QFile::Text)){
         QMessageBox::warning(this, "..", "打开文件失败");
         return;
     }
 
-    filePath=filename;
+    filePath = filename;
 
-    QTextStream in(&file);   //读文件
+    QTextStream in(&file);
     QString text = in.readAll();
-    ui->textEdit->insertPlainText(text);  //显示文件内容
+    ui->textEdit->setPlainText(text);    // 替换而不是追加
     file.close();
 
-    this->setWindowTitle(QFileInfo(filename).absoluteFilePath());  //标题设置为文件名，把文件名字转为 qstring
-
+    this->setWindowTitle(QFileInfo(filename).absoluteFilePath());
     textChanged = false;
 }
 
@@ -123,45 +129,49 @@ void MainWindow::on_actionOpen_triggered()
 void MainWindow::on_actionSave_triggered()
 {
     if(filePath == ""){
-
-        QString filename=QFileDialog::getSaveFileName(this,"保存文件",".",tr("Text file (*.txt)"));
-
-        QFile file(filename); //这里存在问题
-        if(!file.open(QFile::WriteOnly | QFile::Text)){
-            QMessageBox::warning(this, "..", "保存文件失败");
+        QString filename = QFileDialog::getSaveFileName(this,"保存文件",".",tr("Text file (*.txt)"));
+        if(filename.isEmpty()){          // 用户取消
             return;
         }
         filePath = filename;
     }
 
     QFile file(filePath);
-
-    QTextStream out(&file);
-    QString text = ui->textEdit->toPlainText();
-    out<<text;
-    file.flush();
-    file.close();
-
-    this->setWindowTitle(QFileInfo(filePath).absoluteFilePath());
-}
-
-
-void MainWindow::on_actionSaveAs_triggered()
-{
-    QString filename=QFileDialog::getSaveFileName(this,"保存文件",".",tr("Text file (*.txt)"));
-
-    QFile file(filename); //这里存在问题
     if(!file.open(QFile::WriteOnly | QFile::Text)){
         QMessageBox::warning(this, "..", "保存文件失败");
         return;
     }
-    filePath = filename;
 
     QTextStream out(&file);
-    QString text = ui->textEdit->toPlainText();
-    out<<text;
+    out << ui->textEdit->toPlainText();
     file.flush();
     file.close();
+
+    textChanged = false;                 // 关键：复位
+    this->setWindowTitle(QFileInfo(filePath).absoluteFilePath());
+}
+
+void MainWindow::on_actionSaveAs_triggered()
+{
+    QString filename = QFileDialog::getSaveFileName(this,"保存文件",".",tr("Text file (*.txt)"));
+    if(filename.isEmpty()){
+        return;
+    }
+
+    QFile file(filename);
+    if(!file.open(QFile::WriteOnly | QFile::Text)){
+        QMessageBox::warning(this, "..", "保存文件失败");
+        return;
+    }
+
+    QTextStream out(&file);
+    out << ui->textEdit->toPlainText();
+    file.flush();
+    file.close();
+
+    filePath = filename;
+    textChanged = false;
+    this->setWindowTitle(QFileInfo(filePath).absoluteFilePath());
 }
 
 
@@ -195,12 +205,19 @@ bool MainWindow::userEditConfirmed()
         switch(r){
         case QMessageBox::Yes:
             on_actionSave_triggered();
+
+            if(textChanged){          // 保存失败或用户取消了保存对话框
+                return false;
+            }
             break;
+
         case QMessageBox::No:
             textChanged = false;
             break;
+
         case QMessageBox::Cancel:
             return false;
+
         default:
                 return false;
         }
@@ -264,9 +281,11 @@ void MainWindow::on_textEdit_undoAvailable(bool b)
 
 void MainWindow::on_actionFontColor_triggered()
 {
-    QColor color =QColorDialog::getColor(Qt::black,this,"选择颜色");
+    QColor color = QColorDialog::getColor(Qt::black, this, "选择颜色");
     if(color.isValid()){
-        ui->textEdit->setStyleSheet(QString("QPlainTextEdit {color:%1}").arg(color.name()));
+        QPalette p = ui->textEdit->palette();
+        p.setColor(QPalette::Text, color);
+        ui->textEdit->setPalette(p);
     }
 }
 
@@ -279,19 +298,13 @@ void MainWindow::on_actionFontBackgroundColor_triggered()
 
 void MainWindow::on_actionEditColor_triggered()
 {
-    QColor color =QColorDialog::getColor(Qt::black,this,"选择颜色");
+    QColor color = QColorDialog::getColor(Qt::black, this, "选择颜色");
     if(color.isValid()){
-        ui->textEdit->setStyleSheet(QString("QPlainTextEdit {background-color:%1}").arg(color.name()));
+        QPalette p = ui->textEdit->palette();
+        p.setColor(QPalette::Base, color);
+        ui->textEdit->setPalette(p);
     }
 }
-
-
-void MainWindow::on_actionShowLineNumbers_triggered()
-{
-
-
-}
-
 
 void MainWindow::on_actionLineWrap_triggered()
 {
@@ -346,7 +359,7 @@ void MainWindow::on_actionSelectAll_triggered()
 void MainWindow::on_actionExit_triggered()
 {
     if(userEditConfirmed()){
-        exit(0);
+        close();
     }
 }
 
@@ -370,4 +383,13 @@ void MainWindow::on_textEdit_cursorPositionChanged()
     col=pos-flg;
      statusCursorLabel.setText("Ln: "+QString::number(ln+1)+"   Col: "+QString::number(col+1));
 }
+
+
+// void MainWindow::on_actionShowLineNumbers_triggered(bool checked)
+// {
+//     ui->textEdit->hideLineNumberArea(!checked);
+// }
+
+
+
 

@@ -57,8 +57,6 @@ private slots:
 
     void on_actionEditColor_triggered();
 
-    void on_actionShowLineNumbers_triggered();
-
     void on_actionLineWrap_triggered();
 
     void on_actionFont_triggered();
@@ -73,6 +71,8 @@ private slots:
 
     void on_textEdit_cursorPositionChanged();
 
+    // void on_actionShowLineNumbers_triggered(bool checked);
+
 private:
     Ui::MainWindow *ui;
 
@@ -84,4 +84,6 @@ private:
 
     bool userEditConfirmed();
 };
+
+
 #endif // MAINWINDOW_H
