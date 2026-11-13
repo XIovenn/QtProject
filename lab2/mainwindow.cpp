@@ -6,6 +6,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextStream>
+#include <QColorDialog>
+#include <QFontDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,6 +34,22 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionRedo->setEnabled(false);
     ui->actionUndo->setEnabled(false);
     ui->actionPaste->setEnabled(false);
+
+    QPlainTextEdit::LineWrapMode mode = ui->textEdit->lineWrapMode();
+
+    if(mode==QPlainTextEdit::NoWrap){
+        ui->textEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+
+        ui->actionLineWrap->setChecked(false);
+    } else{
+        ui->textEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+
+        ui->actionLineWrap->setChecked(true);
+    }
+
+    ui->actionToolbar->setChecked(true);
+    ui->actionStatusbar->setChecked(true);
+
 }
 
 MainWindow::~MainWindow()
@@ -48,14 +66,14 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionFind_triggered()
 {
-    SearchDialog dlg;
+    SearchDialog dlg(this,ui->textEdit);
     dlg.exec();
 }
 
 
 void MainWindow::on_actionReplace_triggered()
 {
-    ReplaceDialog dlg;
+    ReplaceDialog dlg(this,ui->textEdit);
     dlg.exec();
 }
 
@@ -133,7 +151,7 @@ void MainWindow::on_actionSaveAs_triggered()
     QString filename=QFileDialog::getSaveFileName(this,"保存文件",".",tr("Text file (*.txt)"));
 
     QFile file(filename); //这里存在问题
-    if(!file.open(QFile::ReadOnly | QFile::Text)){
+    if(!file.open(QFile::WriteOnly | QFile::Text)){
         QMessageBox::warning(this, "..", "保存文件失败");
         return;
     }
@@ -178,10 +196,13 @@ bool MainWindow::userEditConfirmed()
             break;
         case QMessageBox::Cancel:
             return false;
+        default:
+                return false;
         }
 
         return true;
     }
+     return true;
 }
 
 
@@ -233,5 +254,93 @@ void MainWindow::on_textEdit_redoAvailable(bool b)
 void MainWindow::on_textEdit_undoAvailable(bool b)
 {
     ui->actionUndo->setEnabled(b);
+}
+
+
+void MainWindow::on_actionFontColor_triggered()
+{
+    QColor color =QColorDialog::getColor(Qt::black,this,"选择颜色");
+    if(color.isValid()){
+        ui->textEdit->setStyleSheet(QString("QPlainTextEdit {color:%1}").arg(color.name()));
+    }
+}
+
+
+void MainWindow::on_actionFontBackgroundColor_triggered()
+{
+
+}
+
+
+void MainWindow::on_actionEditColor_triggered()
+{
+    QColor color =QColorDialog::getColor(Qt::black,this,"选择颜色");
+    if(color.isValid()){
+        ui->textEdit->setStyleSheet(QString("QPlainTextEdit {background-color:%1}").arg(color.name()));
+    }
+}
+
+
+void MainWindow::on_actionShowLineNumbers_triggered()
+{
+
+}
+
+
+void MainWindow::on_actionLineWrap_triggered()
+{
+    QPlainTextEdit::LineWrapMode mode = ui->textEdit->lineWrapMode();
+
+    if(mode==QPlainTextEdit::NoWrap){
+        ui->textEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+
+        ui->actionLineWrap->setChecked(true);
+    } else{
+        ui->textEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+
+        ui->actionLineWrap->setChecked(false);
+    }
+}
+
+
+
+void MainWindow::on_actionFont_triggered()
+{
+    bool ok = false;
+    QFont font = QFontDialog::getFont(&ok,this);
+
+    if(ok){
+        ui->textEdit->setFont(font);
+    }
+}
+
+
+void MainWindow::on_actionToolbar_triggered()
+{
+    bool visible = ui->toolBar->isVisible();
+    ui->toolBar->setVisible(!visible);
+    ui->actionToolbar->setChecked(!visible);
+}
+
+
+void MainWindow::on_actionStatusbar_triggered()
+{
+    bool visible = ui->statusbar->isVisible();
+    ui->statusbar->setVisible(!visible);
+    ui->actionStatusbar->setChecked(!visible);
+}
+
+
+void MainWindow::on_actionSelectAll_triggered()
+{
+    ui->textEdit->selectAll();
+}
+
+
+void MainWindow::on_actionExit_triggered()
+{
+    if(userEditConfirmed()){
+        exit(0);
+    }
 }
 

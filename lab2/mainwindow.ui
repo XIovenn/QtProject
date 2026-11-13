@@ -74,8 +74,8 @@
     <property name="title">
      <string>格式(&amp;O)</string>
     </property>
-    <addaction name="actionWordWrap"/>
-    <addaction name="actionLine"/>
+    <addaction name="actionLineWrap"/>
+    <addaction name="actionShowLineNumbers"/>
     <addaction name="actionFont"/>
     <addaction name="actionFontColor"/>
     <addaction name="separator"/>
@@ -128,7 +128,7 @@
    <addaction name="separator"/>
    <addaction name="actionFont"/>
    <addaction name="separator"/>
-   <addaction name="actionWordWrap"/>
+   <addaction name="actionLineWrap"/>
    <addaction name="actionToolbar"/>
    <addaction name="actionStatusbar"/>
    <addaction name="actionAbout"/>
@@ -340,7 +340,7 @@
     <enum>QAction::MenuRole::NoRole</enum>
    </property>
   </action>
-  <action name="actionWordWrap">
+  <action name="actionLineWrap">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -349,7 +349,7 @@
      <normaloff>:/img/wrap_text.png</normaloff>:/img/wrap_text.png</iconset>
    </property>
    <property name="text">
-    <string>自动换行(&amp;W</string>
+    <string>自动换行(&amp;W)</string>
    </property>
    <property name="toolTip">
     <string>自动换行</string>
@@ -490,7 +490,7 @@
     <enum>QAction::MenuRole::NoRole</enum>
    </property>
   </action>
-  <action name="actionLine">
+  <action name="actionShowLineNumbers">
    <property name="text">
     <string>显示行号(&amp;L)</string>
    </property>
